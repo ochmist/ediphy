@@ -22,6 +22,7 @@ export default {
         //'Youtube',
         'Webpage',
         'GraficaD3',
+        'Objects3D',
         'EnrichedVideo',
         'HotspotImages',
     ],

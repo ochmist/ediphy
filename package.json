@@ -71,6 +71,7 @@
     "recharts": "^1.0.0-alpha.1",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
-    "redux-undo": "^0.6.1"
+    "redux-undo": "^0.6.1",
+    "stl-viewer": "^0.4.0"
   }
 }
