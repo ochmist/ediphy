@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { FormGroup, FormControl, ControlLabel, Button } from 'react-bootstrap';
-import VishSearcherModal from '../external_searcher_modal/ExternalSearcherModal';
-import VishUploaderModal from '../external_uploader_modal/ExternalUploaderModal';
+import ExternalSearcherModal from '../external_searcher_modal/ExternalSearcherModal';
+import ExternalUploaderModal from '../external_uploader_modal/ExternalUploaderModal';
 import i18n from 'i18next';
 
 /**
  * VishProvider Component
  */
-export default class VishProvider extends Component {
+export default class ExternalProvider extends Component {
     /**
      * Constructor
      * @param props
@@ -48,7 +48,7 @@ export default class VishProvider extends Component {
                     onClick={() => {
                         this.setState({ uploading: true });
                     }}>{i18n.t('Upload_to_ViSH')}</Button>
-                <VishSearcherModal visible={this.state.searching}
+                <ExternalSearcherModal visible={this.state.searching}
                     isBusy={this.props.isBusy}
                     fetchResults={this.props.fetchResults}
                     onVishSearcherToggled={(resourceUrl) => {
@@ -58,7 +58,7 @@ export default class VishProvider extends Component {
                         this.setState({ searching: !this.state.searching });
                     }}
                     onFetchVishResources={this.props.onFetchVishResources}/>
-                <VishUploaderModal visible={this.state.uploading}
+                <ExternalUploaderModal visible={this.state.uploading}
                     accept={this.props.accept}
                     isBusy={this.props.isBusy}
                     onVishUploaderToggled={(resourceUrl) => {

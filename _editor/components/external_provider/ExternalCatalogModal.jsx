@@ -5,7 +5,7 @@ import i18n from 'i18next';
 /**
  * VISH Catalog Modal
  */
-export default class VishCatalogModal extends Component {
+export default class ExternalCatalogModal extends Component {
     /**
      * Constructor
      * @param props

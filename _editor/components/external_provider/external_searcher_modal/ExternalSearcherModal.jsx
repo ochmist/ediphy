@@ -6,7 +6,7 @@ import i18n from 'i18next';
 /**
  * VISH Search Component
  */
-export default class VishSearcherModal extends Component {
+export default class ExternalSearcherModal extends Component {
     /**
      * Constructor
      */
