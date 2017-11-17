@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Modal, FormControl, Col, Form, FormGroup, ControlLabel, Button } from 'react-bootstrap';
-import Dali from '../../../../core/editor/main';
+import Ediphy from '../../../../core/editor/main';
 import i18n from 'i18next';
+import PropTypes from 'prop-types';
+
 /**
  * VISH Search Component
  */
-export default class VishSearcherModal extends Component {
+export default class ExternalSearcherModal extends Component {
     /**
      * Constructor
      */
@@ -78,7 +80,7 @@ export default class VishSearcherModal extends Component {
                             </Col>
                             <Col md={2}>
                                 <Button type="submit" className="btn-primary" onClick={(e) => {
-                                    let url = encodeURI(Dali.Config.search_vish_url +
+                                    let url = encodeURI(Ediphy.Config.search_vish_url +
                                         "?q=" + ReactDOM.findDOMNode(this.refs.query).value +
                                         "&type=" + ReactDOM.findDOMNode(this.refs.type).value +
                                         "&sort_by=" + ReactDOM.findDOMNode(this.refs.sort_by).value
@@ -130,13 +132,32 @@ export default class VishSearcherModal extends Component {
 
                 <Modal.Footer>
                     <Button onClick={e => {
-                        this.props.onVishSearcherToggled();
+                        this.props.onExternalSearcherToggled();
                     }}>{i18n.t("Cancel")}</Button>
                     <Button bsStyle="primary" onClick={e => {
-                        this.props.onVishSearcherToggled(this.state.resourceUrl);
+                        this.props.onExternalSearcherToggled(this.state.resourceUrl);
                     }}>{i18n.t("global_config.Accept")}</Button>
                 </Modal.Footer>
             </Modal>
         );
     }
 }
+
+ExternalSearcherModal.proptypes = {
+    /**
+     * Flag para saber si el elemento debería estar visible o no
+     */
+    visible: PropTypes.bool,
+    /**
+     * Resultados obtenidos de la búsqueda en el proveedor externo
+     * */
+    fetchResults: PropTypes.object,
+    /**
+    * Función para mostrar la búsqueda externa
+    * */
+    onExternalSearcherToggled: PropTypes.func,
+    /**
+     * Función para obtener resultados del proveedor externo
+     */
+    onFetchVishResources: PropTypes.func,
+};

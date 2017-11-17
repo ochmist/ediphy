@@ -54,6 +54,9 @@ export default class MarkEditor extends Component {
      * @param e Event
      */
     start(e) {
+        if (e.button === 2) {
+            return;
+        }
         let ended = this.state.ended;
         let start = Date.now();
         this.setState({ start: start, holding: true, ended: false });
@@ -115,7 +118,7 @@ export default class MarkEditor extends Component {
                 style={this.props.style}
                 onMouseDown={this.start}
                 onTouchStart={this.start}
-                onMouseUp={()=>{console.log(0); this.end();}}
+                onMouseUp={()=>{this.end();}}
                 onMouseEnter={(e)=>{
                     this.props.base.pointerEventsCallback('mouseenter', this.props.base.getState());
                 }}
@@ -182,7 +185,6 @@ export default class MarkEditor extends Component {
             /* if(component) {
                 component.setState({ editing: false });
             }*/
-            base.render('UPDATE_BOX');
         };
 
         let clickOutside = function(e) {
@@ -207,7 +209,7 @@ export default class MarkEditor extends Component {
                 return;
             }
             const square = this.getClientRects()[0];
-            let marks = Object.assign({}, toolbarState.__marks);
+            let marks = JSON.parse(JSON.stringify(toolbarState.__marks));
             const x = event.clientX - square.left - cursor_x_offset;// event.offsetX;
             const y = event.clientY - square.top - cursor_y_offset;// event.offsetY;
             const width = square.right - square.left;
