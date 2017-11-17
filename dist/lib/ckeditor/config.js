@@ -34,23 +34,24 @@ CKEDITOR.editorConfig = function (config) {
         {name: 'Encabezado 1', element: 'h1', attributes: {'class': 'ck_h1'}},       
        
     ];
-*/
+*/  config.autoGrow_onStartup = true;
     config.removeButtons =
         'Anchor,' +
         'Unlink,';
     
     /*Currently disabled: plugin mathjax
         Necesario configurarlo también en index.html +visor
-    
+     */  
 
     config.mathJaxClass = 'math-tex';
     config.mathJaxLib = 'http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML';    
-    */   
+    
     config.plugins =
         'a11yhelp,' +
         'basicstyles,' +
         'blockquote,' +
         'clipboard,' +
+        'codesnippet,' +
         'colorbutton,' +
         'contextmenu,' +
         'dialog,' +
@@ -68,12 +69,13 @@ CKEDITOR.editorConfig = function (config) {
         'indentlist,' +
         'indentblock,' +
         'justify,' +
+        // 'lineheight,' +
         'lineutils,' +
         'link,' +
         'list,' +
         'liststyle,' +
         'magicline,' +
-        /*'mathjax,' +*/
+        'mathjax,' +
         'menu,' +
         'pastefromword,' +
         'panel,' +
@@ -90,8 +92,8 @@ CKEDITOR.editorConfig = function (config) {
         'widget,' +
         'widgetselection';
 
-config.keystrokes = [
+/*config.keystrokes = [
     [CKEDITOR.CTRL + 90, 'doNothing']
-    ];
+    ];*/
  };
  

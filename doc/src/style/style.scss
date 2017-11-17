@@ -1,0 +1,249 @@
+//vars and mixins
+$material-font-path:  '../../../node_modules/material-design-icons-font/iconfont/';
+$ediphy_blue: #1fc8db;
+
+@mixin scale{
+  -ms-transform: scale(1.1); /* IE 9 */
+  -webkit-transform: scale(1.1); /* Safari */
+  transform: scale(1.1);
+}
+@import '../../../node_modules/material-design-icons-font/iconfont/material-icons';
+
+body, #root, #root > .container-fluid, #mainRow {
+    height:100%;
+}
+a{
+  color: $ediphy_blue;
+  &:hover, &:active, &:focus{
+    color: $ediphy_blue;
+  }
+}
+
+.ediphy_blue {
+  color: #1fc8db;
+}
+code{
+  color: $ediphy_blue;
+  background-color: #e9fafc;
+}
+
+h4, .h4 {
+    font-size: 18px;
+    font-weight: 500;
+}
+h5, .h5 {
+    font-size: 16px;
+    text-decoration: underline;
+}
+
+.playground h2 {
+  font-size: 18px;
+}
+
+#nbRow{
+  background: #3e3f3a;
+  position: fixed;
+  width: 100%;
+  z-index: 9999;
+  nav.navbar {
+    margin: auto;
+    max-width: 960px;
+    z-index: 9999;
+  }
+}
+.mainCol {
+  height:100%;
+}
+
+.mainRow{
+  max-width: 960px;
+  margin: 60px auto 0;
+}
+#indexCol {
+  background-color: white;
+  padding: 0px;
+  .sidebarTitle{
+    padding: 35px 0 25px;
+    font-size: 1em;
+  }
+  .list-group {
+      margin-top: 10px;
+      margin-bottom: 0px;
+      padding-left: 10px;
+  }
+  hr {
+    margin-top: 5px;
+    border: 0;
+    border-style: ridge;
+    border-top: 3px solid $ediphy_blue;
+    width: 90%;
+  }
+}
+
+.contentCol {
+  padding: 50px;
+  padding-top: 10px;
+  .container{
+    width: auto;
+  }
+}
+
+.jumbotron{
+  h2{
+    font-size: 26px;
+    margin-top: 0;
+    color: gray;
+  }
+}
+.tools{
+  padding: 10px;
+  h3{
+    font-size: 18px;
+    color: gray;
+  }
+  .mainPageBlock{
+    padding: 30px;
+    transition: all .2s ease-in-out;
+    &:hover{
+      @include scale;
+    }
+
+  }
+}
+
+.selectedNav {
+  margin-bottom: 0px;
+  text-decoration: underline;
+}
+
+.list-group-item,
+button.selectedNav,
+button.selectedNav.list-group-item,
+button.selectedNav.list-group-item:hover,
+button.selectedNav.list-group-item:active,
+button.selectedNav.list-group-item:focus,
+button.list-group-item:hover,
+button.list-group-item:active,
+button.list-group-item:focus{
+    box-shadow: none !important;
+    outline: none !important;
+    border-bottom: none !important;
+    border-top: none !important;
+    margin-bottom: 0px;
+}
+
+.navListItem {
+  box-shadow: none !important;
+  outline: none !important;
+  font-weight: bold;
+  font-size: 14px;
+  background-color: transparent;
+  border-bottom: none !important;
+  text-transform: uppercase;
+  font-size: 11px !important;
+}
+
+.subItem{
+  font-weight: normal;
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+.sidebarTitle {
+  font-weight: bold;
+  font-size: 18px;
+  margin: auto;
+  margin-bottom: -20px;
+  text-transform: uppercase;
+  margin-top: 0px;
+  width:90%;
+  padding-top: 26px;
+  padding-bottom: 15px;
+}
+
+
+.mainPageBlock {
+  text-align: center;
+}
+
+.loader {
+  margin-top: 100px;
+  height: 100%;
+  text-align: center;
+}
+
+.loader img {
+  vertical-align: middle;
+}
+
+.navbar, .list-group-item {
+  border-radius: 0px !important;
+}
+
+.list-group-item {
+  span {
+    display:block;
+    width:100%;
+    height:100%;
+    cursor: pointer;
+
+  }
+}
+
+.navbar {
+  margin-bottom: 0px;
+  border:none;
+}
+pre {
+  color: #444;
+}
+
+.markdownContainer img {
+  max-width: 100%;
+  display:block;
+  margin:auto;
+}
+
+img[alt=Índice], img[alt=Toolbar] {
+  float: right;
+  margin: 10px;
+}
+
+.editIcon {
+    float: right;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.list-group-item {
+    padding: 7px 7px;
+    border: none;
+}
+
+.mainLogo {
+    width: 150px;
+    float: left;
+    margin-right: 30px;
+    stroke: #777;
+}
+@media(max-width:576px){
+    .mainCol {
+        height:auto;
+    }
+    .jumbotron {
+        text-align: center;
+        .mainLogo {
+            float: none;
+            margin-right: 0px !important;
+        }
+    }
+}
+
+.tooltip {
+  text-transform: none;
+}
+
+.homeImg {
+  width: 40%;
+  max-width: 170px;
+}

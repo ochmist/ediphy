@@ -12,7 +12,7 @@ module.exports = {
         "border_style": "Estilo de borde",
         "border_color": "Color de borde",
         "border_radius": "Radio de borde",
-        "model":"Modelo",        
+        "model": "Modelo",
         "modelColor": "Color del modelo",
         "bckgColor": "Color del fondo",
         "opacity": "Opacidad",
@@ -29,6 +29,6 @@ module.exports = {
         "order_by": "Ordenar Por",
         "data_rows": "Filas",
         "data_cols": "Columnas",
-        "key": "Key"
-    }
+        "key": "Key",
+    },
 };

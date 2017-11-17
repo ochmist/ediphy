@@ -12,7 +12,7 @@ module.exports = {
         "border_style": "Border Style",
         "border_color": "Border Color",
         "border_radius": "Border Radius",
-        "model":"Model",
+        "model": "Model",
         "modelColor": "Model color",
         "bckgColor": "Background color",
         "opacity": "Opacity",
@@ -29,6 +29,6 @@ module.exports = {
         "order_by": "Order By",
         "data_rows": "Rows",
         "data_cols": "Columns",
-        "key": "Key"
-    }
+        "key": "Key",
+    },
 };
