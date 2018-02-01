@@ -1,7 +1,10 @@
-import { ADD_BOX, MOVE_BOX, ADD_NAV_ITEM, CHANGE_NAV_ITEM_NAME, CHANGE_UNIT_NUMBER, DELETE_BOX, DUPLICATE_BOX, EXPAND_NAV_ITEM,
-    REORDER_NAV_ITEM, DELETE_NAV_ITEM, TOGGLE_NAV_ITEM, TOGGLE_TITLE_MODE, UPDATE_NAV_ITEM_EXTRA_FILES, DELETE_SORTABLE_CONTAINER,
+import {
+    ADD_BOX, MOVE_BOX, ADD_NAV_ITEM, CHANGE_NAV_ITEM_NAME, CHANGE_BACKGROUND, DELETE_BOX, DUPLICATE_BOX, EXPAND_NAV_ITEM,
+    REORDER_NAV_ITEM, DELETE_NAV_ITEM, TOGGLE_NAV_ITEM, TOGGLE_TITLE_MODE, UPDATE_NAV_ITEM_EXTRA_FILES,
+    DELETE_SORTABLE_CONTAINER,
     ADD_RICH_MARK, EDIT_RICH_MARK, DELETE_RICH_MARK,
-    IMPORT_STATE } from '../common/actions';
+    IMPORT_STATE, PASTE_BOX, CHANGE_BOX_LAYER,
+} from '../common/actions';
 import { ID_PREFIX_BOX } from '../common/constants';
 import { changeProp, changeProps, deleteProp, deleteProps, isView, isSlide, isDocument, findNavItemContainingBox, findDescendantNavItems, isContainedView } from '../common/utils';
 
@@ -21,26 +24,31 @@ function navItemCreator(state = {}, action = {}) {
             state[action.payload.parent].unitNumber),
         hidden: state[action.payload.parent].hidden,
         extraFiles: {},
+        background: "rgb(255,255,255)",
         header: {
             elementContent: { documentTitle: '', documentSubTitle: '', numPage: '' },
             display: { courseTitle: 'hidden', documentTitle: 'expanded', documentSubTitle: 'hidden', breadcrumb: "reduced", pageNumber: "hidden" },
         },
-        // titleMode: isSlide(action.payload.type) ? 'hidden' : 'expanded'
     };
 }
 
 function singleNavItemReducer(state = {}, action = {}) {
     switch (action.type) {
     case ADD_BOX:
+    case PASTE_BOX:
         return changeProp(state, "boxes", [...state.boxes, action.payload.ids.id]);
-    case MOVE_BOX:
-        let children = Object.assign([], state.boxes);
-        for(let x in children) {
-            if (children[x] === action.payload.id) {
-                children.push(children.splice(x, 1)[0]);
-            }
+    case CHANGE_BOX_LAYER:
+        let boxes = JSON.parse(JSON.stringify(action.payload.boxes_array));
+        let x = boxes.indexOf(action.payload.id);
+        if (action.payload.value === 'front') { boxes.push(boxes.splice(x, 1)[0]); }
+        if (action.payload.value === 'back') { boxes.unshift(boxes.splice(x, 1)[0]);}
+        if (action.payload.value === 'ahead' && x <= boxes.length - 1) {
+            boxes.splice(x + 1, 0, boxes.splice(x, 1)[0]);
         }
-        return changeProp(state, "boxes", children);
+        if (action.payload.value === 'behind' && x >= 0) {
+            boxes.splice(x - 1, 0, boxes.splice(x, 1)[0]);
+        }
+        return changeProp(state, "boxes", boxes);
     case ADD_NAV_ITEM:
         return changeProps(
             state,
@@ -54,14 +62,9 @@ function singleNavItemReducer(state = {}, action = {}) {
         );
     case CHANGE_NAV_ITEM_NAME:
         return changeProp(state, "name", action.payload.title);
-    case CHANGE_UNIT_NUMBER:
-        let finalValue;
-        if(isNaN(parseInt(action.payload.value, 10))) {
-            finalValue = "";
-        } else {
-            finalValue = action.payload.value;
-        }
-        return changeProp(state, "unitNumber", finalValue);
+
+    case CHANGE_BACKGROUND:
+        return changeProp(state, "background", action.payload.background);
     case DELETE_BOX:
         let stateWithoutBox = changeProp(state, "boxes", state.boxes.filter(id => id !== action.payload.id));
         if(stateWithoutBox.extraFiles[action.payload.id]) {
@@ -73,7 +76,7 @@ function singleNavItemReducer(state = {}, action = {}) {
         }
         return stateWithoutBox;
     case DELETE_RICH_MARK:
-        let previousParents = Object.assign({}, state.linkedBoxes);
+        let previousParents = JSON.parse(JSON.stringify(state.linkedBoxes));
         let oldMarks = previousParents[action.payload.parent];
         let ind = oldMarks.indexOf(action.payload.id);
         if (ind > -1) {
@@ -125,7 +128,7 @@ function singleNavItemReducer(state = {}, action = {}) {
     case TOGGLE_TITLE_MODE:
         return changeProp(state, "header", action.payload.titles);
     case ADD_RICH_MARK:
-        let oldParents = Object.assign({}, state.linkedBoxes);
+        let oldParents = JSON.parse(JSON.stringify(state.linkedBoxes));
         if(Object.keys(oldParents).indexOf(action.payload.parent) === -1) {
             oldParents[action.payload.parent] = [action.payload.mark.id];
         } else {
@@ -144,7 +147,8 @@ function singleNavItemReducer(state = {}, action = {}) {
     }
 }
 
-export default function(state = {}, action = {}) {
+export default function(state = { 0: { id: 0, children: [], boxes: [], level: 0, type: '', hidden: false } }, action = {}) {
+
     switch (action.type) {
     case ADD_BOX:
         if (isView(action.payload.ids.parent)) {
@@ -152,7 +156,12 @@ export default function(state = {}, action = {}) {
         }
         return state;
     case MOVE_BOX:
-        if (action.payload.container === 0 && action.payload.position === 'absolute') {
+        if (action.payload.container === 0 && action.payload.position === 'absolute' && !isContainedView(action.payload.parent)) {
+            return changeProp(state, action.payload.parent, singleNavItemReducer(state[action.payload.parent], action));
+        }
+        return state;
+    case CHANGE_BOX_LAYER:
+        if (action.payload.container === 0 && !isContainedView(action.payload.parent)) {
             return changeProp(state, action.payload.parent, singleNavItemReducer(state[action.payload.parent], action));
         }
         return state;
@@ -169,32 +178,30 @@ export default function(state = {}, action = {}) {
         );
     case CHANGE_NAV_ITEM_NAME:
         return changeProp(state, action.payload.id, singleNavItemReducer(state[action.payload.id], action));
-    case CHANGE_UNIT_NUMBER:
-        let itemsToChange = findDescendantNavItems(state, action.payload.id);
-        let newValues = [];
-        itemsToChange.forEach(item => {
-            newValues.push(singleNavItemReducer(state[item], action));
-        });
-        return changeProps(state, itemsToChange, newValues);
+    case CHANGE_BACKGROUND:
+        if(isView(action.payload.id)) {
+            return changeProp(state, action.payload.id, singleNavItemReducer(state[action.payload.id], action));
+        }
+        return state;
     case DELETE_BOX:
         if (isView(action.payload.parent) && action.payload.parent !== 0) {
             /* if(findNavItemContainingBox(state,action.payload.parent).extraFiles.length !== 0){
-                    return changeProp(Object.assign({}, state,
-                                    Object.assign(
-                                        {},
-                                        {
-                                            [findNavItemContainingBox(state, action.payload.parent).id]:
+                            return changeProp(Object.assign({}, state,
                                             Object.assign(
                                                 {},
-                                                findNavItemContainingBox(state, action.payload.parent),
-                                                {extraFiles: {}
+                                                {
+                                                    [findNavItemContainingBox(state, action.payload.parent).id]:
+                                                    Object.assign(
+                                                        {},
+                                                        findNavItemContainingBox(state, action.payload.parent),
+                                                        {extraFiles: {}
+                                                        }
+                                                    )
                                                 }
                                             )
-                                        }
-                                    )
-                        ),
-                    action.payload.parent, singleNavItemReducer(state[action.payload.parent], action));
-                }*/
+                                ),
+                            action.payload.parent, singleNavItemReducer(state[action.payload.parent], action));
+                        }*/
             return changeProp(state, action.payload.parent, singleNavItemReducer(state[action.payload.parent], action));
         }
 
@@ -203,12 +210,12 @@ export default function(state = {}, action = {}) {
                 Object.assign({},
                     {
                         [findNavItemContainingBox(state, action.payload.parent).id]:
-                        Object.assign(
-                            {},
-                            findNavItemContainingBox(state, action.payload.parent),
-                            { extraFiles: {},
-                            }
-                        ),
+                                Object.assign(
+                                    {},
+                                    findNavItemContainingBox(state, action.payload.parent),
+                                    { extraFiles: {},
+                                    }
+                                ),
                     }
                 )
             );
@@ -217,29 +224,29 @@ export default function(state = {}, action = {}) {
         return state;
     case DELETE_SORTABLE_CONTAINER:
         /* let item = findNavItemContainingBox(state, action.payload.parent);
-        if(item) {
-            if(item.extraFiles.length !== 0) {
-                return Object.assign({}, state,
-                    Object.assign({},
-                        {
-                            [findNavItemContainingBox(state, action.payload.parent).id]:
-                            Object.assign(
-                                {},
-                                findNavItemContainingBox(state, action.payload.parent),
-                                { extraFiles: {},
+                if(item) {
+                    if(item.extraFiles.length !== 0) {
+                        return Object.assign({}, state,
+                            Object.assign({},
+                                {
+                                    [findNavItemContainingBox(state, action.payload.parent).id]:
+                                    Object.assign(
+                                        {},
+                                        findNavItemContainingBox(state, action.payload.parent),
+                                        { extraFiles: {},
+                                        }
+                                    ),
                                 }
-                            ),
-                        }
-                    )
-                );
-            }
-        }*/
-        let nState = Object.assign({}, state);
+                            )
+                        );
+                    }
+                }*/
+        let nState = JSON.parse(JSON.stringify(state));
         /* for (let cv in action.payload.cvs) {
-        for (let b in action.payload.cvs[cv]) {
-          delete nState[cv].parent[action.payload.cvs[cv][b]];
-        }
-      }*/
+                for (let b in action.payload.cvs[cv]) {
+                  delete nState[cv].parent[action.payload.cvs[cv][b]];
+                }
+              }*/
         return nState;
     case DUPLICATE_BOX:
         if (isView(action.payload.parent)) {
@@ -336,7 +343,7 @@ export default function(state = {}, action = {}) {
         if(!action.payload.mark || !action.payload.newConnection) {
             return state;
         }
-        let editState = Object.assign({}, state);
+        let editState = JSON.parse(JSON.stringify(state));
         if (!isContainedView(action.payload.oldConnection) && action.payload.oldConnection !== 0) {
             if (editState[action.payload.oldConnection] && editState[action.payload.oldConnection].linkedBoxes[action.payload.parent]) {
                 let ind = editState[action.payload.oldConnection].linkedBoxes[action.payload.parent].indexOf(action.payload.mark);
@@ -368,6 +375,28 @@ export default function(state = {}, action = {}) {
         return changeProp(state, action.payload.id, singleNavItemReducer(state[action.payload.id], action));
     case IMPORT_STATE:
         return action.payload.present.navItemsById || state;
+    case PASTE_BOX:
+
+        let newState = JSON.parse(JSON.stringify(state));
+        if (isView(action.payload.ids.parent) && !isContainedView(action.payload.ids.parent)) {
+            newState = changeProp(newState, action.payload.ids.parent, singleNavItemReducer(newState[action.payload.ids.parent], action));
+        }
+
+        if (action.payload.toolbar && action.payload.toolbar.state && action.payload.toolbar.state.__marks) {
+            let marks = action.payload.toolbar.state.__marks;
+            for (let mark in marks) {
+                if (isView(marks[mark].connection)) {
+                    if (newState[marks[mark].connection]) {
+                        if (!newState[marks[mark].connection].linkedBoxes[action.payload.ids.id]) {
+                            newState[marks[mark].connection].linkedBoxes[action.payload.ids.id] = [];
+                        }
+                        newState[marks[mark].connection].linkedBoxes[action.payload.ids.id].push(mark);
+
+                    }
+                }
+            }
+        }
+        return newState;
     default:
         return state;
     }

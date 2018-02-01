@@ -50,7 +50,7 @@ export default class EditorCanvasDoc extends Component {
                 style={{ display: this.props.containedViewSelected !== 0 && !this.props.fromCV ? 'none' : 'initial' }}>
 
                 <div className="scrollcontainer"
-                    style={{ backgroundColor: show ? 'white' : 'transparent', display: show ? 'block' : 'none' }}
+                    style={{ backgroundColor: show ? itemSelected.background : 'transparent', display: show ? 'block' : 'none' }}
                     onClick={e => {
                         this.props.onBoxSelected(-1);
                         this.setState({ showTitle: false });
@@ -66,7 +66,7 @@ export default class EditorCanvasDoc extends Component {
                         toolbars={this.props.toolbars}
                         boxes={this.props.boxes}
                     />
-                    <div className="outter canvaseditor" style={{ display: show ? 'block' : 'none' }}>
+                    <div className="outter canvaseditor" style={{ background: itemSelected.background, display: show ? 'block' : 'none' }}>
                         {/*
                     {this.props.fromCV ?  (<button className="btnOverBar cvBackButton" style={{margin: "10px 0px 0px 10px"}}
                              onClick={e => {
@@ -77,11 +77,11 @@ export default class EditorCanvasDoc extends Component {
 
                         <div id={this.props.fromCV ? 'airlayer_cv' : 'airlayer'}
                             className={'doc_air'}
-                            style={{ visibility: (show ? 'visible' : 'hidden') }}>
+                            style={{ background: itemSelected.background, visibility: (show ? 'visible' : 'hidden') }}>
 
                             <div id={this.props.fromCV ? "contained_maincontent" : "maincontent"}
                                 className={'innercanvas doc'}
-                                style={{ visibility: (show ? 'visible' : 'hidden') }}>
+                                style={{ background: itemSelected.background, visibility: (show ? 'visible' : 'hidden') }}>
 
                                 <br/>
 
@@ -122,11 +122,13 @@ export default class EditorCanvasDoc extends Component {
                                             onVerticallyAlignBox={this.props.onVerticallyAlignBox}
                                             onTextEditorToggled={this.props.onTextEditorToggled}
                                             toolbars={this.props.toolbars}
+                                            onRichMarksModalToggled={this.props.onRichMarksModalToggled}
                                             pageType={itemSelected.type || 0}/>;
                                     }
                                     return <EditorBoxSortable key={id}
                                         id={id}
                                         addMarkShortcut={this.props.addMarkShortcut}
+                                        background={itemSelected.background}
                                         boxes={this.props.boxes}
                                         boxSelected={this.props.boxSelected}
                                         boxLevelSelected={this.props.boxLevelSelected}
@@ -145,6 +147,7 @@ export default class EditorCanvasDoc extends Component {
                                         onSortableContainerResized={this.props.onSortableContainerResized}
                                         onSortableContainerDeleted={this.props.onSortableContainerDeleted}
                                         onSortableContainerReordered={this.props.onSortableContainerReordered}
+                                        onRichMarksModalToggled={this.props.onRichMarksModalToggled}
                                         onBoxDropped={this.props.onBoxDropped}
                                         onVerticallyAlignBox={this.props.onVerticallyAlignBox}
                                         onTextEditorToggled={this.props.onTextEditorToggled}
@@ -162,6 +165,7 @@ export default class EditorCanvasDoc extends Component {
                     onTextEditorToggled={this.props.onTextEditorToggled}
                     onBoxResized={this.props.onBoxResized}
                     onBoxDeleted={this.props.onBoxDeleted}
+                    lastActionDispatched={this.props.lastActionDispatched}
                     pointerEventsCallback={this.props.toolbars[this.props.boxSelected] && this.props.toolbars[this.props.boxSelected].config && this.props.toolbars[this.props.boxSelected].config.name && Ediphy.Plugins.get(this.props.toolbars[this.props.boxSelected].config.name) ? Ediphy.Plugins.get(this.props.toolbars[this.props.boxSelected].config.name).pointerEventsCallback : null}
                     onMarkCreatorToggled={this.props.onMarkCreatorToggled}
                     toolbar={this.props.toolbars[this.props.boxSelected]}/>

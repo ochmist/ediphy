@@ -27,7 +27,7 @@ export default class RichMarksModal extends Component {
         this.state = {
             connectMode: "new",
             displayMode: "navigate",
-            newSelected: "",
+            newSelected: this.props.navItems[this.props.navItemSelected] ? this.props.navItems[this.props.navItemSelected].type : "",
             existingSelected: "",
             newType: PAGE_TYPES.SLIDE,
             viewNames: this.returnAllViews(this.props),
@@ -43,6 +43,7 @@ export default class RichMarksModal extends Component {
     componentWillReceiveProps(nextProps) {
         let current = nextProps.currentRichMark;
         let allViews = this.returnAllViews(nextProps);
+        let currentViewType = this.props.containedViewSelected === 0 ? this.props.navItems[this.props.navItemSelected].type : this.props.containedViews[this.props.containedViewSelected].type;
         if (!this.props.visible) {
             if (current) {
                 this.setState({
@@ -51,7 +52,7 @@ export default class RichMarksModal extends Component {
                     connectMode: current.connectMode || "new",
                     displayMode: current.displayMode || "navigate",
                     newSelected: (current.connectMode === "new" ? current.connection : ""),
-                    newType: PAGE_TYPES.SLIDE,
+                    newType: nextProps.navItems[nextProps.navItemSelected] ? nextProps.navItems[nextProps.navItemSelected].type : "",
                     existingSelected: (current.connectMode === "existing" && this.remapInObject(nextProps.navItems, nextProps.containedViews)[current.connection] ?
                         this.remapInObject(nextProps.navItems, nextProps.containedViews)[current.connection].id : ""),
                 });
@@ -62,10 +63,11 @@ export default class RichMarksModal extends Component {
                     connectMode: "new",
                     displayMode: "navigate",
                     newSelected: "",
-                    newType: PAGE_TYPES.SLIDE,
+                    newType: nextProps.navItems[nextProps.navItemSelected] ? nextProps.navItems[nextProps.navItemSelected].type : "",
                     existingSelected: "",
                 });
             }
+
         }
 
     }
@@ -84,16 +86,17 @@ export default class RichMarksModal extends Component {
         let current = this.props.currentRichMark;
 
         let selected = this.state.existingSelected && (this.props.containedViews[this.state.existingSelected] || this.props.navItems[this.state.existingSelected]) ? (isContainedView(this.state.existingSelected) ? { label: this.props.containedViews[this.state.existingSelected].name, id: this.state.existingSelected } :
-            { label: this.props.navItems[this.state.existingSelected].name, id: this.state.existingSelected }) : this.returnAllViews(this.props)[0];
+            { label: this.props.navItems[this.state.existingSelected].name, id: this.state.existingSelected }) : this.returnAllViews(this.props)[0] || [];
         let newSelected = "";
 
-        // if (this.state.connectMode === 'existing') {
         if (this.props.containedViews[this.state.newSelected]) {
             newSelected = this.props.containedViews[this.state.newSelected].name;
         } else if (this.props.navItems[this.state.newSelected]) {
             newSelected = this.props.navItems[this.state.newSelected].name;
         }
-        // }
+
+        let currentNavItemType = this.props.navItems[this.props.navItemSelected].type;
+
         let pluginType = this.props.pluginToolbar && this.props.pluginToolbar.config ? this.props.pluginToolbar.config.displayName : 'Plugin';
         return (
             <Modal className="pageModal richMarksModal" backdrop bsSize="large" show={this.props.visible}>
@@ -185,14 +188,13 @@ export default class RichMarksModal extends Component {
                                 </span>
                             </FormGroup>
                             <FormGroup style={{ display: this.state.connectMode === "existing" ? "initial" : "none" }}>
-                                <Typeahead options={this.returnAllViews(this.props)}
-                                    placeholder="Search view by name"
-                                    ignoreDiacritics={false}
-                                    selected={[selected]}
-                                    onChange={items => {
-                                        this.setState({ existingSelected: items.length !== 0 ? items[0].id : "" });
-                                    }}/>
+                                {this.state.connectMode === "existing" && <FormControl componentClass="select" onChange={e=>{this.setState({ existingSelected: e.target.value });}}>
+                                    {this.returnAllViews(this.props).map(view=>{
+                                        return <option key={view.id} value={view.id}>{view.label}</option>;
+                                    })}
+                                </FormControl>}
                             </FormGroup>
+
                             <FormGroup style={{ display: this.state.connectMode === "external" ? "initial" : "none" }}>
                                 <FormControl ref="externalSelected"
                                     type="text"
@@ -232,7 +234,7 @@ export default class RichMarksModal extends Component {
                                 <FormControl
                                     ref="value"
                                     type={this.state.actualMarkType}
-                                    defaultValue={current ? current.value : (marksType.default ? marksType.default : 0)}/>
+                                    defaultValue={this.props.markCursorValue ? this.props.markCursorValue : (current ? current.value : (marksType.default ? marksType.default : 0))}/>
                             </Col>
                         </FormGroup>
                     </Row>
@@ -265,6 +267,10 @@ export default class RichMarksModal extends Component {
                                     boxes: [],
                                     type: this.state.newType,
                                     extraFiles: {},
+                                    background: {
+                                        background: 'rgb(255,255,255)',
+                                        attr: 'full',
+                                    },
                                     header: {
                                         elementContent: {
                                             documentTitle: name,
@@ -302,7 +308,7 @@ export default class RichMarksModal extends Component {
                             }
                         }
                         this.props.onRichMarkUpdated({ id: (current ? current.id : newMark), title, connectMode, connection, displayMode, value, color }, this.state.newSelected === "");
-                        if(connectMode === 'new' && !this.props.toolbars[connection.id] && this.state.newType === PAGE_TYPES.DOCUMENT) {
+                        if(connectMode === 'new' && !this.props.toolbars[connection.id || connection] && this.state.newType === PAGE_TYPES.DOCUMENT) {
                             this.props.onBoxAdded({ parent: newId, container: 0, id: ID_PREFIX_SORTABLE_BOX + Date.now() }, false, false);
                         }
                         this.props.onRichMarksModalToggled();
