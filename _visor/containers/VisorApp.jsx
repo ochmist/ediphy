@@ -158,7 +158,7 @@ export default class Visor extends Component {
             changeCurrentView: (element) => {this.changeCurrentView(element);},
             canvasRatio: ratio,
             containedViews: containedViewsById,
-            currentView: currentView,
+            // currentView: currentView,
             fromScorm: this.state.fromScorm,
             navItems: navItems,
             removeLastView: ()=>{this.removeLastView(); },
@@ -172,7 +172,9 @@ export default class Visor extends Component {
             viewsArray: this.state.currentView,
         };
         let visorContent = !isContainedView(currentView) ? (
-            <VisorCanvas {...canvasProps} showCanvas={currentView.indexOf("cv-") === -1} />) : (<VisorContainedCanvas {...canvasProps} showCanvas={currentView.indexOf("cv-") !== -1} />);
+            <VisorCanvas {...canvasProps} showCanvas={!isContainedView(currentView)} />) : (<VisorContainedCanvas {...canvasProps} showCanvas={isContainedView(currentView)} />);
+        let currentNavs = this.state.currentView.filter(n=>!isContainedView(n));
+        let currentNavItem = (currentNavs.length > 0) ? currentNavs[currentNavs.length - 1] : 0;
         return (
             <div id="app"
                 className={wrapperClasses} >
@@ -211,13 +213,15 @@ export default class Visor extends Component {
                                     navItemsIds={navItemsIds}
                                     containedViews={containedViewsById}
                                     currentView={currentView}
+                                    currentNavItem={currentNavItem}
                                     navItemsById={navItems}
                                     globalConfig={globalConfig}
                                     exercises={exercises}
                                     pluginToolbars={pluginToolbars}
                                     fromScorm={this.state.fromScorm}
                                     changeCurrentView={(el)=>{this.changeCurrentView(el);}}>
-                                    {visorContent}
+                                    <VisorCanvas {...canvasProps} showCanvas={currentNavItem === currentView} currentView={currentNavItem}/>
+                                    {!isContainedView(currentView) ? (<span />) : <VisorContainedCanvas {...canvasProps} showCanvas={currentView.indexOf("cv-") !== -1} currentView={currentView} />}
                                 </ScormComponent>
                             </Col>
                         </Row>

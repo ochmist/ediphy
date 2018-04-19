@@ -4,6 +4,7 @@ import { isContainedView, isPage, isSection } from '../../../common/utils';
 import Config from '../../../core/config';
 import * as API from './../../../core/scorm/scorm_utils';
 import GlobalScore from '../scorm/GlobalScore';
+import VisorCanvas from '../canvas/VisorCanvas';
 
 export default class ScormComponent extends Component {
     constructor(props) {
@@ -70,14 +71,16 @@ export default class ScormComponent extends Component {
 
     render() {
         const { children, globalConfig } = this.props;
-
+        console.log(this.props.children, );
         let scoreInfo = { userName: this.state.userName, totalScore: this.state.totalScore, totalWeight: this.totalWeight, isPassed: this.state.isPassed, completionProgress: this.state.completionProgress };
-        let childrenWithProps = React.Children.map(children, (child, i) =>
-            React.cloneElement(child, {
+        let childrenWithProps = React.Children.map(children, (child, i) => {
+
+            return React.cloneElement(child, {
                 key: i,
                 setAnswer: this.setAnswer,
                 submitPage: this.submitPage,
-                exercises: this.state.exercises[this.props.currentView] }));
+                exercises: this.state.exercises[(child.type === VisorCanvas) ? this.props.currentNavItem : this.props.currentView] });});
+        console.log(childrenWithProps);
         return [...childrenWithProps, this.props.globalConfig.hideGlobalScore ? null : null,
             <GlobalScore key="-1" scoreInfo={scoreInfo} show={!globalConfig.hideGlobalScore && !globalConfig.visorNav.sidebar}/>,
         ];

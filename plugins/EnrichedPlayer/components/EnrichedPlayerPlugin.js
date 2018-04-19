@@ -25,24 +25,26 @@ export default class EnrichedPlayerPlugin extends React.Component {
 
     componentWillUpdate(nextProps, nextState) {
         if(nextState.played !== this.state.played) {
-            let sudo = this;
 
             let marks = this.props.props.marks || {};
             let triggerMark = this.props.props.onMarkClicked;
             let triggerArray = this.state.toBeTriggered;
-            triggerArray.forEach(function(e) {
+            console.log(triggerArray);
+            triggerArray.forEach((e) =>{
                 if ((parseFloat(e.value) / 100).toFixed(3) < parseFloat(nextState.played).toFixed(3)) {
                     let toBeTriggered = triggerArray;
-                    triggerMark(sudo.props.props.id, e.value, false);
+                    this.setState({ playing: false });
+                    triggerMark(this.props.props.id, e.value, false);
+
                     toBeTriggered.splice(e, 1);
-                    sudo.setState({ toBeTriggered: toBeTriggered });
+                    this.setState({ toBeTriggered: toBeTriggered });
                 }
             });
 
-            Object.keys(marks).forEach(function(key) {
+            Object.keys(marks).forEach((key) =>{
                 let notInArray = true;
 
-                triggerArray.forEach(function(mark) {
+                triggerArray.forEach((mark) => {
                     if(mark === key) {
                         notInArray = false;
                     }
@@ -51,7 +53,7 @@ export default class EnrichedPlayerPlugin extends React.Component {
                 if(notInArray && parseFloat(nextState.played).toFixed(3) <= (parseFloat(marks[key].value) / 100).toFixed(3) && parseFloat(parseFloat(nextState.played).toFixed(3)) + 0.1 >= parseFloat((parseFloat(marks[key].value) / 100).toFixed(3))) {
                     let toBeTriggered = triggerArray;
                     toBeTriggered.push(marks[key]);
-                    sudo.setState({ toBeTriggered: toBeTriggered });
+                    this.setState({ toBeTriggered: toBeTriggered });
                 }
             });
         }
