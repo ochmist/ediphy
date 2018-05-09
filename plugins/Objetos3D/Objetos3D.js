@@ -1,7 +1,6 @@
 import React from 'react';
 import i18n from 'i18next';
-import { STLViewer } from 'stl-viewer';
-
+import Object3DComponent from './components/Object3DComponent';
 /* eslint-disable react/prop-types */
 export function Objetos3D(base) {
     return {
@@ -34,10 +33,10 @@ export function Objetos3D(base) {
                             __name: 'Config',
                             icon: 'link',
                             buttons: {
-                                name: {
+                                url: {
                                     __name: 'Config',
                                     type: 'text',
-                                    value: state.name,
+                                    value: state.url,
                                     autoManaged: false,
                                 },
                             },
@@ -48,13 +47,15 @@ export function Objetos3D(base) {
         },
         getInitialState: function() {
             return {
-                name: "Ediphy",
+                url: "http://localhost:8080/stl/eyeball.stl",
+                color: '#FF0000',
             };
         },
         getRenderTemplate: function(state, props) {
-            return (<div style={{ height: "100%", width: "100%" }}>
-                <STLViewer url="http://localhost:8080/stl/eyeball.stl" loading={false} width={400} height={400} modelColor='#B92C2C' backgroundColor='#EAEAEA' rotate orbitControls/>
-            </div>);
+            /* <STLViewer url="http://localhost:8080/stl/eyeball.stl" loading={false} width={400} height={400} modelColor='#B92C2C' backgroundColor='#EAEAEA' rotate orbitControls/>*/
+            return (
+                <Object3DComponent src={state.url} color={state.color}/>
+            );
         },
     };
 }
