@@ -10,6 +10,10 @@
  * @param imageFormat Resulting image format
  * @returns {boolean} True if there is images in the clipboard. False otherwise
  */
+import React, { Component } from 'react';
+import CKEditor from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 export function retrieveImageFromClipboardAsBase64(pasteEvent, uploadFunction, callback, imageFormat) {
     // TODO link with VISH
     if(pasteEvent.clipboardData === false) {
@@ -141,7 +145,14 @@ export function getCKEDITORAdaptedContent(data) {
     // Plain text version
     // return (event.clipboardData.getData("text/plain"));
 }
-
+export function getCKEDITOR5AdaptedContent(data) {
+    let writer = <CKEditor
+        editor={ ClassicEditor }
+        data={data}
+        onChange={ (event, editor) => console.log({ event, editor }) }
+    />;
+    return encodeURI(writer.props.data);
+}
 export function isURL(str) {
     if (!str) {
         return false;

@@ -52,6 +52,7 @@ export default {
         'ScormPackage',
         'FlashObject',
         'Rating',
+        'TextCKE5',
     ],
     availableLanguages: [
         'en',

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { isSortableContainer } from '../../common/utils';
 import PluginPlaceholder from '../../_editor/components/canvas/plugin_placeholder/PluginPlaceholder';
 import { UPDATE_BOX } from '../../common/actions';
-import { getCKEDITORAdaptedContent } from '../../_editor/components/clipboard/clipboard.utils';
+import { getCKEDITORAdaptedContent, getCKEDITOR5AdaptedContent } from '../../_editor/components/clipboard/clipboard.utils';
 let html2json = require('html2json').html2json;
 
 export default function() {
@@ -119,7 +119,8 @@ export default function() {
                 if (!state.__text) {
                     state.__text = "<p>" + Ediphy.i18n.t("text_here") + "</p>";
                 }
-                state.__text = getCKEDITORAdaptedContent(state.__text);
+                state.__text = getCKEDITOR5AdaptedContent(state.__text);
+                console.log(state.text);
                 if (!descendant.getRenderTemplate) {
                     descendant.getRenderTemplate = function(stateObj, { exercises: { correctAnswer: [] } }) {
                         return stateObj.__text;

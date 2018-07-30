@@ -130,6 +130,8 @@
     "webpack-merge": "^4.1.1"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^11.0.1",
+    "@ckeditor/ckeditor5-react": "^1.0.0-beta.1",
     "@trendmicro/react-toggle-switch": "^0.5.7",
     "BasicPlayer": "file:plugins/BasicPlayer",
     "DataTable": "file:plugins/DataTable",
